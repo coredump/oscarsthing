@@ -1,6 +1,7 @@
 import pigpio
 from astral import Astral
 from datetime import datetime  
+from datetime import time
 
 #config
 light_pin = 5
@@ -22,13 +23,13 @@ def lights(action="on", pin=5, p=None):
 sunrise, sunset = city.daylight()
 now = datetime.now(city.tzinfo)
 
-if now > sunrise and now < sunset:
-    print "Sun is out"
-    lights("on", light_pin, pi)
+if now.isoweekday() < 6:
+    if now.time() > time(7, 0, 0) and now.time() < sunset.time():
+        lights("on", light_pin, pi)
+    else:
+        lights("off", light_pin, pi)
 else:
-    print "Sun is not out"
-    lights("off", light_pin, pi)
-
-print now
-print sunset
-print sunrise
+    if now.time() > time(9, 0, 0) and now.time() < sunset.time():
+        lights("on", light_pin, pi)
+    else:
+        lights("off", light_pin, pi)
